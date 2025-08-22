@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Portfolio</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+  <link rel="icon" href="Favicon.png" type="image/x-icon">
   <style>
     /* Global */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -36,7 +37,7 @@
     /* Skills */
     .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 20px; width: 100%; max-width: 1000px; }
     .skill-card { background: #000; border-radius: 25px; padding: 20px; text-align: center; transition: 0.3s; cursor: pointer; }
-    .skill-card:hover { transform: scale(1.05); box-shadow: 0 6px 15px rgba(0,0,0,0.5); background-color: white; }
+    .skill-card:hover { transform: scale(1.05); box-shadow: 0 6px 15px rgba(255, 255, 255, 0.5); background-color: white; }
     .skill-card:hover p {color: black}
     .skill-card i { font-size: 40px; margin-bottom: 10px; display: block; }
 
@@ -55,7 +56,7 @@
 
     /* Contact */
     .contact-links { display: flex; justify-content: center; gap: 40px; font-size: 2rem; }
-    .contact-links a { color: #e5e7eb; transition: 0.3s; padding: 15px; background: white; border-radius: 25px; }
+    .contact-links a { border: 2px solid black; color: #e5e7eb; transition: 0.3s; padding: 15px; background: white; border-radius: 25px; }
     .contact-links a:hover { color: #60a5fa; transform: scale(1.2); }
 
     /* Footer */
@@ -76,7 +77,7 @@
 
   <!-- Hero -->
   <section id="hero">
-    <img src="your-photo.jpeg" alt="Your Photo">
+    <img src="My_Photo.jpeg" alt="Something went wrong. You should see my photo">
     <h1>Tibor Lovasz</h1>
     <p>Business and AI-focused Full-stack Software Engineer</p>
     <a href="#projects">View My Work</a>
@@ -113,9 +114,9 @@
     <h2>Contact</h2>
     <p>I'm currently open to new opportunities and my inbox is always open. Whether you have a question or just want to say hi, feel free to connect!</p>
     <div class="contact-links">
-      <a href="mailto:youremail@example.com"><i class="devicon-google-plain colored"></i></a>
-      <a href="https://github.com/yourhandle"><i class="devicon-github-original colored"></i></a>
-      <a href="https://linkedin.com/in/yourhandle"><i class="devicon-linkedin-plain colored"></i></a>
+      <a href="mailto:tiborlovasz@icloud.com"><i class="devicon-google-plain colored"></i></a>
+      <a href="https://github.com/thelocoman"><i class="devicon-github-original colored"></i></a>
+      <a href="https://linkedin.com/in/tibor-lovasz-435732260"><i class="devicon-linkedin-plain colored"></i></a>
     </div>
   </section>
 
@@ -155,8 +156,9 @@
         description: "This portfolio website, deployed to AWS to showcase cloud skills.",
         tech: ["HTML", "CSS", "JS", "AWS"],
         liveUrl: "#",
-        repoUrl: "#",
-        imagesrc: 'portfolio_page.png',
+        repoUrl: "https://github.com/thelocoman/Portfolio-Page",
+        imagesrc: 'Portfolio_Page.png',
+        id:0,
       },
       {
         title: "Secure Auth Platform (In-Progress)",
@@ -165,6 +167,7 @@
         liveUrl: "#",
         repoUrl: "#",
         imagesrc: 'In_Progress.png',
+        id:1,
       },
       {
         title: "AI-Powered Content Summarizer  (In-Progress)",
@@ -173,6 +176,7 @@
         liveUrl: "#",
         repoUrl: "#",
         imagesrc: 'In_Progress.png',
+        id:2,
       },
       {
         title: "E-commerce Backend  (In-Progress)",
@@ -181,6 +185,7 @@
         liveUrl: "#",
         repoUrl: "#",
         imagesrc: 'In_Progress.png',
+        id:3,
       },
     ];
 
@@ -189,6 +194,7 @@
     projectsData.forEach((project) => {
       const projectCard = document.createElement('div');
       projectCard.classList.add('project-card');
+      projectCard.addEventListener('click', () => openModal(project.id));
 
       const projectImagePlaceholder = document.createElement('div');
       const image = document.createElement('img')
@@ -227,6 +233,8 @@
       const modal = document.getElementById("modal");
       document.getElementById("modal-title").innerText = projectsData[id].title;
       document.getElementById("modal-desc").innerText = projectsData[id].description;
+      document.getElementById("modal-demo").setAttribute('href', projectsData[id].liveUrl);
+      document.getElementById("modal-code").setAttribute('href', projectsData[id].repoUrl)
       modal.style.display = "flex";
       setTimeout(() => modal.classList.add("show"), 10);
     }

@@ -1,13 +1,9 @@
-Welcome to my portfolio page. Created to showcase my best work in software development. 
+Welcome to my portfolio page. Created to showcase my skills in software development. 
 
-This project has 2 files in it:
-    1. Personal_Page_1.html
-    2. Personal_Page_2.html
-The only reason for it is that there are parts from each file that are needed for the final page.
+This project is meant to be an index page, so it is kept simple for that reason. 
 
-To run this program all you need to do is save the file on the Desktop and click on it, it will
-automatically open. Even though this is a way to open the file and see the final way that it will
-be presented. The project is meant to be deployed on AWS.
 
-These two files were created and modified with Gemini and Chat-GPT, also by me manually. 
+To run this program, all you need to do is to download the .zip file and unzip it. Once uziped click on the file with the extension .html, this will automatically open this file in the default web browser (Chrome, Safari, Mozilla, etc.). This project is also hosted on AWS and accesible on a domain tiborlovasz.com
 
+
+The project links are linked to the root (the main portfolio site - this one) as they are in the development stage. The projects are present on the page to showcase the current work I am doing while searching for job position. They will be linked up in the following weeks as they will be coming out.
