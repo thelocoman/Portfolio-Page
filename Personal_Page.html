@@ -69,8 +69,10 @@
     #modal button { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.2rem; color: #9ca3af; cursor: pointer; }
     #modal button:hover { color: white; }
     #modal a { display: inline-block; margin: 10px; padding: 10px 20px; border-radius: 6px; text-decoration: none; }
-    #modal a.demo { background: #3b82f6; color: white; }
-    #modal a.code { background: #374151; color: #e5e7eb; }
+    #modal a.demo { background: #000000; color: white; }
+    #modal a.code { background: #000000; color: white; }
+    #modal a.demo:hover { background: #ffffff; color: rgb(0, 0, 0); transition: 0.3s; box-shadow: 0 6px 15px rgba(255, 255, 255, 0.5)}
+    #modal a.code:hover { background: #ffffff; color: rgb(0, 0, 0); transition: 0.3s; box-shadow: 0 6px 15px rgba(255, 255, 255, 0.5)}
   </style>
 </head>
 <body>
@@ -115,8 +117,8 @@
     <p>I'm currently open to new opportunities and my inbox is always open. Whether you have a question or just want to say hi, feel free to connect!</p>
     <div class="contact-links">
       <a href="mailto:tiborlovasz@icloud.com"><i class="devicon-google-plain colored"></i></a>
-      <a href="https://github.com/thelocoman"><i class="devicon-github-original colored"></i></a>
-      <a href="https://linkedin.com/in/tibor-lovasz-435732260"><i class="devicon-linkedin-plain colored"></i></a>
+      <a href="https://github.com/thelocoman" target="_blank"><i class="devicon-github-original colored"></i></a>
+      <a href="https://linkedin.com/in/tibor-lovasz-435732260" target="_blank"><i class="devicon-linkedin-plain colored"></i></a>
     </div>
   </section>
 
@@ -159,7 +161,7 @@
         repoUrl: "https://github.com/thelocoman/Portfolio-Page",
         imagesrc: 'Portfolio_Page.png',
         id:0,
-      },
+      },      
       {
         title: "Secure Auth Platform (In-Progress)",
         description: "A full-stack application demonstrating secure user authentication and session management using OAuth 2.0.",
@@ -186,6 +188,15 @@
         repoUrl: "#",
         imagesrc: 'In_Progress.png',
         id:3,
+      },
+      {
+        title: "Personal Finance Tool (In-Progress)",
+        description: "A personal development financial tool, that helps users to set goals, plan financial transactions, collaborate all in one comprehensive and intuitive space",
+        tech: ["HTML", "CSS", "JS", "AWS", "Express", "NodeJS", "PostgreSQL"],
+        liveUrl: "http://harmonia-elasticbeanstalk.eba-jj3j7vaw.eu-north-1.elasticbeanstalk.com/",
+        repoUrl: null,
+        imagesrc: 'Harmonia.png',
+        id:4,
       },
     ];
 
@@ -234,7 +245,15 @@
       document.getElementById("modal-title").innerText = projectsData[id].title;
       document.getElementById("modal-desc").innerText = projectsData[id].description;
       document.getElementById("modal-demo").setAttribute('href', projectsData[id].liveUrl);
+      if(projectsData[id].repoUrl != null){
+      document.getElementById("modal-code").innerHTML = "Code"
       document.getElementById("modal-code").setAttribute('href', projectsData[id].repoUrl)
+      document.getElementById("modal-code").style.pointerEvents = ''
+      } else {
+      document.getElementById("modal-code").innerHTML = "Proprietary Code"
+      document.getElementById("modal-code").removeAttribute('href')
+      document.getElementById("modal-code").style.pointerEvents = 'none'
+      }
       modal.style.display = "flex";
       setTimeout(() => modal.classList.add("show"), 10);
     }
