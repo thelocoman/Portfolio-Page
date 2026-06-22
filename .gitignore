@@ -3,3 +3,7 @@
 /Client/.DS_Store
 
 SETUP.md
+
+node_modules/
+
+.next/
