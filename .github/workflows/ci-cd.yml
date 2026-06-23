@@ -1,0 +1,140 @@
+name: Portfolio Pipeline
+
+on:
+  pull_request:
+    branches: [ main, staging ]
+  push:
+    branches: [ main, staging ]
+
+jobs:
+  # ==========================================
+  # GATE: Enforce PRs to main ONLY come from staging
+  # ==========================================
+  enforce-staging-source:
+    name: Verify PR Source Branch
+    runs-on: ubuntu-latest
+    # Removed the top-level 'if' so this job ALWAYS runs on every PR and reports a real status
+    steps:
+    - name: Check branch origin
+      run: |
+        TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
+        SOURCE_BRANCH="${{ github.event.pull_request.head.ref }}"
+        
+        echo "Target branch: $TARGET_BRANCH"
+        echo "Source branch: $SOURCE_BRANCH"
+        
+        # Scenario 1: Someone is trying to PR directly into main
+        if [ "$TARGET_BRANCH" = "main" ]; then
+          if [ "$SOURCE_BRANCH" != "staging" ]; then
+            echo "ERROR: You cannot PR directly into main from a feature branch."
+            echo "Please open a PR into 'staging' first, test it, and then PR 'staging' into 'main'."
+            exit 1
+          else
+            echo "Valid PR path: staging -> main. Proceeding."
+            exit 0
+          fi
+        fi
+        
+        # Scenario 2: Standard PR into staging or other branches
+        echo "PR target is not main ($TARGET_BRANCH). Passing safety gate automatically."
+        exit 0
+
+  # ==========================================
+  # JOB 1: THE TEST RUNNER
+  # ==========================================
+  test:
+    name: Run Lint, Unit, and E2E Tests
+    needs: enforce-staging-source
+    # Now tests will only run if the safety gate explicitly SUCCEEDS
+    if: always() && needs.enforce-staging-source.result == 'success'
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Client/portfolio-page
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+        cache-dependency-path: ./Client/portfolio-page/package-lock.json
+
+    - name: Install Project Dependencies
+      run: npm ci
+
+    - name: Run Vitest (Unit Tests)
+      run: npx vitest run
+
+    - name: Install Headless Playwright Browsers
+      run: npx playwright install --with-deps
+
+    - name: Run Playwright (E2E Tests)
+      run: npx playwright test
+      env:
+        CI: true
+
+  # ==========================================
+  # JOB 2: AUTOMATIC STAGING DEPLOYMENT
+  # ==========================================
+  deploy-staging:
+    name: Deploy to AWS Staging
+    needs: [enforce-staging-source, test]
+    # Standard push to staging branch tracking
+    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Client/portfolio-page
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Build Next.js Static Export
+      run: npm ci && npm run build
+
+    - name: Authenticate to AWS
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Sync Static Files to AWS Staging Bucket
+      run: aws s3 sync out/ s3://your-staging-bucket-name --delete
+
+  # ==========================================
+  # JOB 3: AUTOMATIC PRODUCTION DEPLOYMENT
+  # ==========================================
+  deploy-production:
+    name: Deploy to AWS Production
+    needs: [enforce-staging-source, test]
+    # Standard merge/push to main branch tracking
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Client/portfolio-page
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Build Next.js Static Export
+      run: npm ci && npm run build
+
+    - name: Authenticate to AWS
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Sync Static Files to AWS Production Bucket
+      run: aws s3 sync out/ s3://your-production-bucket-name --delete

@@ -1,0 +1,46 @@
+name: Block Duplicate PRs
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  check-duplicate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for existing PRs from this branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const headBranch = context.payload.pull_request.head.ref;
+            const currentPrNumber = context.payload.pull_request.number;
+            
+            // Fetch all open PRs in the repository
+            const { data: openPrs } = await github.rest.pull_requests.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open'
+            });
+            
+            // Count how many open PRs originate from this exact same branch
+            const duplicates = openPrs.filter(pr => pr.head.ref === headBranch && pr.number !== currentPrNumber);
+            
+            if (duplicates.length > 0) {
+              // Post a comment explaining why the PR is being rejected
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: currentPrNumber,
+                body: `❌ **PR Rejected:** The branch \`${headBranch}\` already has an active Pull Request open (#${duplicates[0].number}). To prevent status check conflicts, you cannot open multiple PRs for the same branch.`
+              });
+              
+              // Automatically close the duplicate PR
+              await github.rest.pull_requests.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: currentPrNumber,
+                state: 'closed'
+              });
+              
+              core.setFailed("Duplicate PR detected and closed automatically.");
+            }
