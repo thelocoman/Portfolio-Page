@@ -1,0 +1,133 @@
+name: Portfolio Pipeline
+
+on:
+  pull_request:
+    branches: [ main, staging ]
+  push:
+    branches: [ main, staging ]
+
+jobs:
+  # ==========================================
+  # NEW GATE: Enforce PRs to main ONLY come from staging
+  # ==========================================
+  enforce-staging-source:
+    name: Verify PR Source Branch
+    runs-on: ubuntu-latest
+    if: github.base_ref == 'main' && github.event_name == 'pull_request'
+    steps:
+    - name: Check branch origin
+      run: |
+        # Double-check inside the runner execution environment
+        if [ "${{ github.base_ref }}" != "main" ]; then
+          echo "Not targeting main branch. Skipping check safely."
+          exit 0
+        fi
+
+        echo "Target branch: ${{ github.base_ref }}"
+        echo "Source branch: ${{ github.head_ref }}"
+        
+        if [ "${{ github.head_ref }}" != "staging" ]; then
+          echo "ERROR: You cannot PR directly into main from a feature branch."
+          echo "Please open a PR into 'staging' first, test it, and then PR 'staging' into 'main'."
+          exit 1
+        fi
+
+  # ==========================================
+  # JOB 1: THE TEST RUNNER
+  # ==========================================
+  test:
+    name: Run Lint, Unit, and E2E Tests
+    needs: enforce-staging-source
+    if: |
+      always() && 
+      (needs.enforce-staging-source.result == 'success' || needs.enforce-staging-source.result == 'skipped')
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    # Moved the working directory scoping directly inside this job block
+    defaults:
+      run:
+        working-directory: ./Client/portfolio-page
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+        cache-dependency-path: ./Client/portfolio-page/package-lock.json
+
+    - name: Install Project Dependencies
+      run: npm ci
+
+    - name: Run Vitest (Unit Tests)
+      run: npx vitest run
+
+    - name: Install Headless Playwright Browsers
+      run: npx playwright install --with-deps
+
+    - name: Run Playwright (E2E Tests)
+      run: npx playwright test
+      env:
+        CI: true
+
+  # ==========================================
+  # JOB 2: AUTOMATIC STAGING DEPLOYMENT
+  # ==========================================
+  deploy-staging:
+    name: Deploy to AWS Staging
+    needs: [enforce-staging-source, test]
+    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Client/portfolio-page
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Build Next.js Static Export
+      run: npm ci && npm run build
+
+    - name: Authenticate to AWS
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Sync Static Files to AWS Staging Bucket
+      run: aws s3 sync out/ s3://your-staging-bucket-name --delete
+
+  # ==========================================
+  # JOB 3: AUTOMATIC PRODUCTION DEPLOYMENT
+  # ==========================================
+  deploy-production:
+    name: Deploy to AWS Production
+    needs: [enforce-staging-source, test]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Client/portfolio-page
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Build Next.js Static Export
+      run: npm ci && npm run build
+
+    - name: Authenticate to AWS
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Sync Static Files to AWS Production Bucket
+      run: aws s3 sync out/ s3://your-production-bucket-name --delete
