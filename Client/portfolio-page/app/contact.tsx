@@ -1,4 +1,4 @@
-import { Html5Original, GithubOriginal, LinkedinPlain } from 'devicons-react';
+import { GithubOriginal, LinkedinPlain } from 'devicons-react';
 
 export default function Contact() {
   return (
