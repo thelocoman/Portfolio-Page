@@ -13,7 +13,8 @@ jobs:
   enforce-staging-source:
     name: Verify PR Source Branch
     runs-on: ubuntu-latest
-    # Removed the top-level 'if' so this job ALWAYS runs on every PR and reports a real status
+    # FIX: Only run this gate during a Pull Request. Keeps push/deployments clean!
+    if: github.event_name == 'pull_request'
     steps:
     - name: Check branch origin
       run: |
@@ -23,7 +24,6 @@ jobs:
         echo "Target branch: $TARGET_BRANCH"
         echo "Source branch: $SOURCE_BRANCH"
         
-        # Scenario 1: Someone is trying to PR directly into main
         if [ "$TARGET_BRANCH" = "main" ]; then
           if [ "$SOURCE_BRANCH" != "staging" ]; then
             echo "ERROR: You cannot PR directly into main from a feature branch."
@@ -35,7 +35,6 @@ jobs:
           fi
         fi
         
-        # Scenario 2: Standard PR into staging or other branches
         echo "PR target is not main ($TARGET_BRANCH). Passing safety gate automatically."
         exit 0
 
@@ -45,8 +44,10 @@ jobs:
   test:
     name: Run Lint, Unit, and E2E Tests
     needs: enforce-staging-source
-    # Now tests will only run if the safety gate explicitly SUCCEEDS
-    if: always() && needs.enforce-staging-source.result == 'success'
+    # FIX: Evaluates gate success on PRs, but skips cleanly and runs on direct push merges
+    if: |
+      always() && 
+      (needs.enforce-staging-source.result == 'success' || needs.enforce-staging-source.result == 'skipped')
     timeout-minutes: 15
     runs-on: ubuntu-latest
     defaults:
@@ -70,8 +71,7 @@ jobs:
       run: npx vitest run
 
     - name: Verify Production Build
-      run: npm run build
-      working-directory: ./Client/portfolio-page
+      run: npm run build # FIX: Removed duplicated step working-directory key
 
     - name: Install Headless Playwright Browsers
       run: npx playwright install --with-deps
@@ -86,8 +86,7 @@ jobs:
   # ==========================================
   deploy-staging:
     name: Deploy to AWS Staging
-    needs: [enforce-staging-source, test]
-    # Standard push to staging branch tracking
+    needs: test # FIX: Dropped enforce-staging-source from needs array to avoid push event crashes
     if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
     runs-on: ubuntu-latest
     defaults:
@@ -107,7 +106,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        aws-region: eu-north-1
 
     - name: Sync Static Files to AWS Staging Bucket
       run: aws s3 sync out/ s3://my-portfolio-0.1-staging --delete
@@ -117,8 +116,7 @@ jobs:
   # ==========================================
   deploy-production:
     name: Deploy to AWS Production
-    needs: [enforce-staging-source, test]
-    # Standard merge/push to main branch tracking
+    needs: test # FIX: Dropped enforce-staging-source from needs array to avoid push event crashes
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     defaults:
@@ -138,7 +136,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        aws-region: eu-north-1
 
     - name: Sync Static Files to AWS Production Bucket
       run: aws s3 sync out/ s3://your-production-bucket-name --delete
