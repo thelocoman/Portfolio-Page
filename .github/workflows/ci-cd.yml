@@ -87,7 +87,7 @@ jobs:
   deploy-staging:
     name: Deploy to AWS Staging
     needs: test # FIX: Dropped enforce-staging-source from needs array to avoid push event crashes
-    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+    if: github.ref_name == 'staging' && github.event_name == 'push'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -117,7 +117,7 @@ jobs:
   deploy-production:
     name: Deploy to AWS Production
     needs: test # FIX: Dropped enforce-staging-source from needs array to avoid push event crashes
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref_name == 'main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     defaults:
       run:
