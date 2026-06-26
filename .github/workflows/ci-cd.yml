@@ -13,7 +13,6 @@ jobs:
   enforce-staging-source:
     name: Verify PR Source Branch
     runs-on: ubuntu-latest
-    # FIX: Only run this gate during a Pull Request. Keeps push/deployments clean!
     if: github.event_name == 'pull_request'
     steps:
     - name: Check branch origin
@@ -44,7 +43,6 @@ jobs:
   test:
     name: Run Lint, Unit, and E2E Tests
     needs: enforce-staging-source
-    # FIX: Evaluates gate success on PRs, but skips cleanly and runs on direct push merges
     if: |
       always() && 
       (needs.enforce-staging-source.result == 'success' || needs.enforce-staging-source.result == 'skipped')
@@ -71,7 +69,7 @@ jobs:
       run: npx vitest run
 
     - name: Verify Production Build
-      run: npm run build # FIX: Removed duplicated step working-directory key
+      run: npm run build
 
     - name: Install Headless Playwright Browsers
       run: npx playwright install --with-deps
@@ -86,8 +84,9 @@ jobs:
   # ==========================================
   deploy-staging:
     name: Deploy to AWS Staging
-    needs: test # FIX: Dropped enforce-staging-source from needs array to avoid push event crashes
-    if: github.event_name == 'push' && github.ref_name == 'staging' && needs.test.result == 'success'
+    needs: test
+    # FIX: Added always() to force GitHub to evaluate this job regardless of the grandparent status
+    if: always() && github.event_name == 'push' && github.ref_name == 'staging' && needs.test.result == 'success'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -116,8 +115,9 @@ jobs:
   # ==========================================
   deploy-production:
     name: Deploy to AWS Production
-    needs: test # FIX: Dropped enforce-staging-source from needs array to avoid push event crashes
-    if: github.event_name == 'push' && github.ref_name == 'main' && needs.test.result == 'success'
+    needs: test
+    # FIX: Added always() here as well
+    if: always() && github.event_name == 'push' && github.ref_name == 'main' && needs.test.result == 'success'
     runs-on: ubuntu-latest
     defaults:
       run:
