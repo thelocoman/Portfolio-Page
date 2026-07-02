@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  @keyframes spinOnce {
+    from { transform: rotateY(0deg) translateZ(1px); }
+    to { transform: rotateY(360deg) translateZ(1px); }
+  }
+  @keyframes scrollFlow {
+    0% { transform-origin: top; transform: translateY(0) scaleY(0.05); }
+    25% { transform-origin: top; transform: translateY(0) scaleY(1); }
+    75% { transform-origin: top; transform: translateY(40px) scaleY(1); }
+    100% { transform-origin: bottom; transform: translateY(40px) scaleY(0.05); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  --animate-spin-once: spinOnce 1.2s cubic-bezier(.22, 1.61, .36, 1);
+  --animate-scroll-flow: scrollFlow 1.6s infinite linear;
+  --animate-fade-in: fadeIn 1.2s ease forwards;
+}
+
+/* Enforce hardware-accelerated scroll snapping on the document level */
+html {
+  scroll-behavior: smooth !important;
+  scroll-snap-type: y mandatory !important;
+  overflow-y: scroll;
+  height: 100%;
+}
+
+body {
+  background-color: #111827 !important;
+  color: #e5e7eb;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+/* Force each major structural view to align exactly with the viewport edges */
+section {
+  height: 100vh;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  scroll-snap-align: start !important;
+  scroll-snap-stop: always !important;
+}
