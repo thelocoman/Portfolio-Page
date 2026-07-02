@@ -139,4 +139,4 @@ jobs:
         aws-region: eu-north-1
 
     - name: Sync Static Files to AWS Production Bucket
-      run: aws s3 sync out/ s3://your-production-bucket-name --delete
+      run: aws s3 sync out/ s3://my-portfolio-0.1 --delete
