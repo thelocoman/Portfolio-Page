@@ -6,7 +6,7 @@ export default function Hero() {
   const [text, setText] = useState('');
   const [isTypingDone, setIsTypingDone] = useState(false);
   
-  const fullText = `- THE TRILLION-DOLLAR AMBITION EXECUTED THROUGH\n<u>CLEAN CODE</u> AND ENDURING <u>BUSINESS PRINCIPLES</u> -`;
+  const fullText = `- THE TRILLION-DOLLAR AMBITION EXECUTED THROUGH CLEAN CODE  AND ENDURING BUSINESS PRINCIPLES -`;
 
   useEffect(() => {
     let currentIndex = 0;

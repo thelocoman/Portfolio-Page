@@ -2,10 +2,10 @@ import { GithubOriginal, LinkedinPlain } from 'devicons-react';
 
 export default function Contact() {
   return (
-    <section id="contact" className="bg-gradient-to-b from-[#45daea] to-black flex flex-col justify-center items-center py-20 px-6">
-      <h2 className="text-4xl font-bold mb-6 text-black">Contact</h2>
+    <section id="contact" className="bg-gradient-to-b from-[#1e40af] to-[#45daea] flex flex-col justify-center items-center py-20 px-6">
+      <h2 className="text-4xl font-bold mb-6 text-black">Social Media and Contact</h2>
       <p className="text-gray-900 font-medium max-w-xl text-center text-lg mb-10">
-        I'm currently open to new opportunities and my inbox is always open. Whether you have a question or just want to say hi, feel free to connect!
+        I'm open to meeting new people and to new opportunities. Here are the channels through which you can connect with me or watch my content. Feel free to connect, and enjoy the new posts!
       </p>
       
       <div className="flex gap-10 justify-center">
