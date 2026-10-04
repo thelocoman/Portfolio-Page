@@ -1,3 +1,4 @@
+/*Global Application Footer Layout Component. Single Responsibility: Renders standard copyright and developer attribution footer. */
 export default function Footer() {
   return (
     <footer className="bg-black text-center py-6 text-sm text-gray-500 border-t border-gray-950">
