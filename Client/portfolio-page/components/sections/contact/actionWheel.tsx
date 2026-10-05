@@ -1,3 +1,5 @@
+'use client';
+
 import { ContactAction, WheelDimensions } from '@/types/contact.types';
 import { calculateSlicePath, calculateSliceCenterCoordinates } from '@/utils/geometry';
 
@@ -16,7 +18,6 @@ export function ActionWheel({
   onSelectAction,
 }: ActionWheelProps) {
   const total = actions.length;
-
   return (
     <div className="relative w-[510px] h-[510px] flex items-center justify-center filter drop-shadow-2xl">
       <svg

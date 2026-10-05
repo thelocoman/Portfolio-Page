@@ -5,8 +5,13 @@ import { CONTACT_ACTIONS } from '@/constants/contactActions';
 import { ContactAction, WheelDimensions } from '@/types/contact.types';
 import { useRippleEffect } from '@/hooks/useRippleEffect';
 import { RippleBackground } from './rippleBackground';
-import { ActionWheel } from './actionWheel';
 import { CentralHub } from './centralHub';
+import dynamic from 'next/dynamic';
+
+const ActionWheel = dynamic(
+  () => import('./actionWheel').then((mod) => mod.ActionWheel),
+  { ssr: false }
+);
 
 const WHEEL_DIMENSIONS: WheelDimensions = {
   wheelSize: 510,

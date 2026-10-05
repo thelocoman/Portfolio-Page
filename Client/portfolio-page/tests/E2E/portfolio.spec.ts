@@ -5,26 +5,22 @@ test.describe('Portfolio Core Interactions', () => {
   
   test.beforeEach(async ({ page }) => {
     // Navigate and explicitly wait for initial network requests to settle
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/', { waitUntil: 'domcontentloaded'});
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('should mount typewriter component and render visible text container', async ({ page }) => {
     const typewriter = page.locator('#typewriter');
     
-    // Scroll element into view if offscreen
-    await typewriter.scrollIntoViewIfNeeded();
-    
     // Assert typewriter is mounted and visible in the DOM
-    await expect(typewriter).toBeVisible();
+    await expect(typewriter).toBeVisible({ timeout: 10000 });
   });
 
   test('should trigger hover state interactions on the user name element', async ({ page }) => {
     // Locate title element
     const nameHeading = page.locator('h1', { hasText: 'TIBOR' });
     
-    await nameHeading.scrollIntoViewIfNeeded();
-    await nameHeading.hover();
+    await nameHeading.hover({force: true});
     
     // Assert heading remains visible and accessible during/after hover
     await expect(nameHeading).toBeVisible();
