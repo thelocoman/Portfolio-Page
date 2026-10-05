@@ -2,9 +2,9 @@ import React from 'react';
 import { TECH_ICONS } from '../../../constants/techIcons';
 
 interface TechMarqueeProps {
-  tech: string[];
-  localRotateY: number;
-  localRotateZ: number;
+  readonly tech: string[];
+  readonly localRotateY: number;
+  readonly localRotateZ: number;
 }
 
 /* Renders a continuously scrolling horizontal tech stack marquee transformed in 3D space to match orbit angles. */

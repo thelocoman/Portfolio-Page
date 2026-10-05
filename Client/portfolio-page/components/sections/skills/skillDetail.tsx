@@ -1,5 +1,4 @@
-import React from 'react';
-import { DeckItem } from '../../types/skills.types';
+import { DeckItem } from '../../../types/skills.types';
 
 interface SkillDetailPanelProps {
   activeItem?: DeckItem;

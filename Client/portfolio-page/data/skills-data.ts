@@ -38,18 +38,18 @@ export const SKILLS_DECK_DATA: DeckItem[] = [
     title: 'MY FULL-STACK TECHNICAL SKILLS',
     description: "I believe software is the engine behind building something truly massive. That's why I've spent the last 4 years going deep across the full stack, from front-end to back-end, databases, and DevOps, all built on solid architecture and engineering principles. Wanting to also back that hands-on experience with formal proof, I'm now pursuing a Bachelor's of Science in Computer Science at the University of the People.",
   },
-  { id: 'sub-frontend', type: 'subtitle', title: 'Frontend Skills' },
+  { id: 'sub-frontend', type: 'subtitle', title: 'Frontend Skills', description: '' },
   ...FRONTEND_SKILLS.map((s, i): DeckItem => ({ id: `fe-skill-${i}`, type: 'skill', title: s.name, icon: s.icon, description: s.description })),
 
-  { id: 'sub-backend', type: 'subtitle', title: 'Backend Skills' },
+  { id: 'sub-backend', type: 'subtitle', title: 'Backend Skills', description: '' },
   ...BACKEND_SKILLS.map((s, i): DeckItem => ({ id: `be-skill-${i}`, type: 'skill', title: s.name, icon: s.icon, description: s.description })),
 
-  { id: 'sub-db', type: 'subtitle', title: 'Database Skills' },
+  { id: 'sub-db', type: 'subtitle', title: 'Database Skills', description: '' },
   ...DATABASE_SKILLS.map((s, i): DeckItem => ({ id: `db-skill-${i}`, type: 'skill', title: s.name, icon: s.icon, description: s.description })),
 
-  { id: 'sub-devops', type: 'subtitle', title: 'DevOps & Cloud' },
+  { id: 'sub-devops', type: 'subtitle', title: 'DevOps & Cloud', description: '' },
   ...DEVOPS_SKILLS.map((s, i): DeckItem => ({ id: `devops-skill-${i}`, type: 'skill', title: s.name, icon: s.icon, description: s.description })),
 
-  { id: 'sub-architecture', type: 'subtitle', title: 'Architecture & Engineering' },
+  { id: 'sub-architecture', type: 'subtitle', title: 'Architecture & Engineering', description: '' },
   ...ARCHITECTURE_SKILLS.map((s, i): DeckItem => ({ id: `architecture-skill-${i}`, type: 'skill', title: s.name, icon: s.icon, description: s.description })),
 ];

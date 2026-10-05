@@ -1,5 +1,4 @@
-import React from 'react';
-import { SubtitleDeckItem } from '../../types/skills.types';
+import { SubtitleDeckItem } from '../../../types/skills.types';
 
 interface SkillSubtitleCardProps {
   item: SubtitleDeckItem;

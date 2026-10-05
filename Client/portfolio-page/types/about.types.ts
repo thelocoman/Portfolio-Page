@@ -1,7 +1,7 @@
 import type { RefObject } from 'react';
 
 export interface AboutProps {
-  readonly containerRef: RefObject<HTMLDivElement>;
+  readonly containerRef: RefObject<HTMLDivElement | null> ;
 }
 
 export interface VideoKeyPoint {

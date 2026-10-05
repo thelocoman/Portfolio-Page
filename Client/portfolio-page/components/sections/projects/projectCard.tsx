@@ -72,7 +72,7 @@ export function ProjectCard({
 
         <p className="text-xs">Technologies Used:</p>
         <TechMarquee
-          tech={project.tech}
+          tech={[...project.tech]}
           localRotateY={metrics.localRotateY}
           localRotateZ={metrics.localRotateZ}
         />
